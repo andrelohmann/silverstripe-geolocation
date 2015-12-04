@@ -1,0 +1,5 @@
+name: geolocation
+---
+DataObject:
+  extensions:
+    - AddGeodistanceFunction
