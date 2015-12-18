@@ -3,14 +3,16 @@
 /**
  * This will add the geodistance function to your mysql database
  */
-class AddGeodistanceFunction extends DataExtension{
+class AddGeodistanceFunction extends DataExtension
+{
     
     // Set Default Frontend group for new members
-    public function requireDefaultRecords() {
+    public function requireDefaultRecords()
+    {
         parent::requireDefaultRecords();
         
-        if(defined('CREATE_GEODISTANCE_UDF') && GEOFORM_CREATE_GEODISTANCE_UDF){
-            if(!defined('CreateGeodistanceOnce')){
+        if (defined('CREATE_GEODISTANCE_UDF') && GEOFORM_CREATE_GEODISTANCE_UDF) {
+            if (!defined('CreateGeodistanceOnce')) {
                 define('CreateGeodistanceOnce', true);
 
                 $q1 = "DROP FUNCTION IF EXISTS geodistance;";
@@ -34,7 +36,7 @@ SET vara = SQRT((varb * varb) + (COS(lat1) * COS(lat2) * (varc * varc)));
 SET distance = radius * (2.0 * ASIN(CASE WHEN 1.0 < vara THEN 1.0 ELSE vara END));
 RETURN distance;
 END
-";            
+";
                 DB::query($q1);
                 DB::query($q2);
 

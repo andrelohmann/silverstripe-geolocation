@@ -6,7 +6,8 @@
  * 
  * @package geoform
  */
-class GeoFunctions {
+class GeoFunctions
+{
     
     public static $Latitude = 'Latitude';
     public static $Longditude = 'Longditude';
@@ -15,8 +16,9 @@ class GeoFunctions {
      * errechnet, wieviel Grad Länge bei einem gegebenen Grad Breite = 1KM entsprechen
      * 
      */
-    public static function calcOneOnLng($geo_lat, $scale = 'km'){
-        switch(strtolower($scale)){
+    public static function calcOneOnLng($geo_lat, $scale = 'km')
+    {
+        switch (strtolower($scale)) {
             case 'miles':
                 $earth = 3960;
             break;
@@ -42,8 +44,9 @@ class GeoFunctions {
         return (1/($earth * $c));
     }
     
-    public static function getDistance($lat1, $long1, $lat2, $long2, $scale = 'km'){
-        switch(strtolower($scale)){
+    public static function getDistance($lat1, $long1, $lat2, $long2, $scale = 'km')
+    {
+        switch (strtolower($scale)) {
             case 'miles':
                 $earth = 3960;
             break;
@@ -74,10 +77,11 @@ class GeoFunctions {
         return ($earth * $b);
     }
 
-    public static function getSquare($geo_lat, $geo_lng, $radius, $scale = 'km'){
+    public static function getSquare($geo_lat, $geo_lng, $radius, $scale = 'km')
+    {
         // damit wir auch auf der sicheren Seite sind
         $radius = $radius + 1;
-        switch(strtolower($scale)){
+        switch (strtolower($scale)) {
             case 'miles':
                 $one = 0.01446863119016716418;
             break;
@@ -90,41 +94,41 @@ class GeoFunctions {
 
         $adToLat = $one * $radius;
         // über 90 oder unter -90 grad
-        if(($geo_lat + $adToLat) > 90){
+        if (($geo_lat + $adToLat) > 90) {
             // das ganze ist überm Nordpol, lng kann auf -+180 gesetzt werden
             $lng_left = -180;
             $lng_right = 180;
             $lat_up = 90;
             $lat_down = $geo_lat - $adToLat;
-        }elseif(($geo_lat - $adToLat) < -90){
+        } elseif (($geo_lat - $adToLat) < -90) {
             // überm Südpol
             $lng_left = -180;
             $lng_right = 180;
             $lat_up = $geo_lat + $adToLat;
             $lat_down = -90;
-        }else{
+        } else {
             // berechnung kann los gehen
             $lat_up = $geo_lat + $adToLat;
             $lat_down = $geo_lat - $adToLat;
-            if(abs($lat_down) > $lat_up){
+            if (abs($lat_down) > $lat_up) {
                 $adToLng = self::calcOneOnLng($lat_down, $scale) * $radius;
-            }else{
+            } else {
                 $adToLng = self::calcOneOnLng($lat_up, $scale) * $radius;
             }
             // jetzt noch das 180 Grad Problem
-            if((($geo_lng - $adToLng) < -180) || (($geo_lng + $adToLng) > 180)){
-                if(($total = ($geo_lng - $adToLng)) < -180){
+            if ((($geo_lng - $adToLng) < -180) || (($geo_lng + $adToLng) > 180)) {
+                if (($total = ($geo_lng - $adToLng)) < -180) {
                     $lng_left = (180 - abs($total + 180));
-                }else{
+                } else {
                     $lng_left = $geo_lng - $adToLng;
                 }
 
-                if(($total = ($geo_lng + $adToLng)) > 180){
+                if (($total = ($geo_lng + $adToLng)) > 180) {
                     $lng_right = (-180 + abs($total - 180));
-                }else{
+                } else {
                     $lng_right = $geo_lng + $adToLng;
                 }
-            }else{
+            } else {
                 $lng_left = $geo_lng - $adToLng;
                 $lng_right = $geo_lng + $adToLng;
             }
@@ -132,32 +136,36 @@ class GeoFunctions {
         return array('UpperLeft' => array('Latitude' => $lat_up, 'Longditude' => $lng_left), 'LowerRight' => array('Latitude' => $lat_down, 'Longditude' => $lng_right));
     }
 
-    public static function getSQLSquare($geo_lat, $geo_lng, $radius, $scale = 'km'){
+    public static function getSQLSquare($geo_lat, $geo_lng, $radius, $scale = 'km')
+    {
         $square = self::getSquare($geo_lat, $geo_lng, $radius, $scale);
-        if($square['UpperLeft']['Longditude'] < $square['LowerRight']['Longditude']){
+        if ($square['UpperLeft']['Longditude'] < $square['LowerRight']['Longditude']) {
             return '\''.$square['LowerRight']['Latitude'].'\' < '.self::$Latitude.' AND '.self::$Latitude.' < \''.$square['UpperLeft']['Latitude'].'\' AND \''.$square['UpperLeft']['Longditude'].'\' < '.self::$Longditude.' AND '.self::$Longditude.' < \''.$square['LowerRight']['Longditude'].'\'';
-        }else{
+        } else {
             return '\''.$square['LowerRight']['Latitude'].'\' < '.self::$Latitude.' AND '.self::$Latitude.' < \''.$square['UpperLeft']['Latitude'].'\' AND (\''.$square['UpperLeft']['Longditude'].'\' < '.self::$Longditude.' OR '.self::$Longditude.' < \''.$square['LowerRight']['Longditude'].'\')';
         }
     }
     
-    public static function getSQLSquareByBox($square = array('UpperLeft' => array('Latitude' => false, 'Longditude' => false), 'LowerRight' => array('Latitude' => false, 'Longditude' => false))){
-        if($square['UpperLeft']['Longditude'] < $square['LowerRight']['Longditude']){
+    public static function getSQLSquareByBox($square = array('UpperLeft' => array('Latitude' => false, 'Longditude' => false), 'LowerRight' => array('Latitude' => false, 'Longditude' => false)))
+    {
+        if ($square['UpperLeft']['Longditude'] < $square['LowerRight']['Longditude']) {
             return '\''.$square['LowerRight']['Latitude'].'\' < '.self::$Latitude.' AND '.self::$Latitude.' < \''.$square['UpperLeft']['Latitude'].'\' AND \''.$square['UpperLeft']['Longditude'].'\' < '.self::$Longditude.' AND '.self::$Longditude.' < \''.$square['LowerRight']['Longditude'].'\'';
-        }else{
+        } else {
             return '\''.$square['LowerRight']['Latitude'].'\' < '.self::$Latitude.' AND '.self::$Latitude.' < \''.$square['UpperLeft']['Latitude'].'\' AND (\''.$square['UpperLeft']['Longditude'].'\' < '.self::$Longditude.' OR '.self::$Longditude.' < \''.$square['LowerRight']['Longditude'].'\')';
         }
     }
     
-    public static function checkLatLng($geo_lat, $geo_lng){
-        if(((-90 <= $geo_lat) && ($geo_lat <= 90)) && ((-180 <= $geo_lng) && ($geo_lng <= 180))){
+    public static function checkLatLng($geo_lat, $geo_lng)
+    {
+        if (((-90 <= $geo_lat) && ($geo_lat <= 90)) && ((-180 <= $geo_lng) && ($geo_lng <= 180))) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
 
-    public static function getMiddle($UpperLeft = array('Latitude' => false, 'Longditude' => false), $LowerRight = array('Latitude' => false, 'Longditude' => false)){
+    public static function getMiddle($UpperLeft = array('Latitude' => false, 'Longditude' => false), $LowerRight = array('Latitude' => false, 'Longditude' => false))
+    {
         $Middle['Latitude'] = ($LowerRight['Latitude'] + (($UpperLeft['Latitude'] - $LowerRight['Latitude']) / 2));
         $Middle['Longditude'] = ($UpperLeft['Longditude'] + (($LowreRight['Longditude'] - $UpperLeft['Longditude']) / 2));
         return $Middle;
