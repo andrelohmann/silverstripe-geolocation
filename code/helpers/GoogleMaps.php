@@ -4,17 +4,20 @@
  * GoogleMaps Variable
  * @package geoform
  */
-class GoogleMaps {
+class GoogleMaps
+{
     /**
      * @var string $API_KEY
      */
-    static protected $API_KEY = null;
+    protected static $API_KEY = null;
     
-    public static function setApiKey($key){
+    public static function setApiKey($key)
+    {
         self::$API_KEY = $key;
     }
     
-    public static function getApiKey(){
+    public static function getApiKey()
+    {
         return self::$API_KEY;
     }
 }
