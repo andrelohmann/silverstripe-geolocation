@@ -89,7 +89,7 @@ class GeoLocation extends Location implements CompositeDBField {
 		$size = $size.'x'.$size;
 		$loc = $this->latitude.",".$this->longditude;
 		$marker = 'color:blue%7C'.$loc;
-		$imageurl = "https://maps.googleapis.com/maps/api/staticmap?center=".$loc."&size=".$size."&language=".i18n::get_tinymce_lang()."&markers=".$marker."&maptype=roadmap&zoom=14&sensor=false";
+		$imageurl = "https://maps.googleapis.com/maps/api/staticmap?center=".$loc."&size=".$size."&language=".i18n::get_tinymce_lang()."&markers=".$marker."&maptype=roadmap&zoom=14";
 		return '<img src="'.$imageurl.'" />';
 	}
 
